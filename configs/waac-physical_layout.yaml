@@ -1,0 +1,134 @@
+# -----------------------------------------------------
+# PHYSICAL LAYOUT CONFIGURATION
+# Defines the physical warehouse structure including:
+# - Buildings, areas, and rack layouts
+# - Storage equipment specifications
+# - Capacity and dimensional constraints
+# - Location tagging for classification
+# -----------------------------------------------------
+physical_layout:
+  warehouse_id: 'WH001'
+  buildings:
+    building_1:
+      name: 'Main Building'
+      areas:
+        area_A:
+          name: 'Area A'
+          tags: ['ground_floor', 'forklift_accessible', 'temperature_controlled']
+          racks:
+            rack_A1:
+              type: 'selective_pallet_rack'
+              physical_properties:
+                length: 30000  # mm
+                height: 8000   # mm
+                depth: 1100    # mm
+              structure:
+                bays: 10
+                levels: 4
+                positions_per_bay: 3
+              capacity:
+                per_level: 2000    # kg
+                per_position: 800  # kg
+              coordinates:
+                x: 0
+                y: 0
+                orientation: 0  # gradi
+              tags:
+                - location: 'front_area'
+                - access: 'easy_reach'
+                - height: 'medium'
+                - equipment: ['forklift', 'pallet_jack']
+                - storage_type: ['euro_pallet', 'industrial_pallet']
+                - environment: ['dry', 'clean']
+                - temperature_range: [-5, 25]  # Celsius
+              security:
+                load_notices: true
+                impact_protection: true
+              
+            rack_A2:
+              type: 'drive_in_rack'
+              physical_properties:
+                length: 18000  # mm
+                height: 10000  # mm
+                depth: 9600   # mm
+              structure:
+                lanes: 6
+                levels: 4
+                depth_positions: 8
+              capacity:
+                per_level: 6000     # kg
+                per_position: 1000  # kg
+              coordinates:
+                x: 35000
+                y: 0
+                orientation: 0
+              tags:
+                - location: 'back_area'
+                - access: 'specialized'
+                - height: 'high'
+                - equipment: ['reach_truck']
+                - storage_type: ['euro_pallet']
+                - environment: ['dry', 'dust_sensitive']
+                - minimum_batch: 'full_lane'
+                
+        area_B:
+          name: 'Area B'
+          racks:
+            rack_B1:
+              type: 'carton_flow_rack'
+              physical_properties:
+                length: 27000  # mm
+                height: 2000   # mm
+                depth: 2400    # mm
+              structure:
+                sections: 10
+                levels: 3
+                lanes_per_level: 4
+              capacity:
+                per_lane: 100  # kg
+              coordinates:
+                x: 0
+                y: 15000
+                orientation: 90
+              tags:
+                - location: 'front_area'
+                - access: 'easy_reach'
+                - height: 'low'
+                - equipment: ['manual', 'pallet_jack']
+                - storage_type: ['carton', 'box']
+                - environment: ['clean', 'controlled']
+
+# -----------------------------------------------------
+# TAG DEFINITION
+# Central catalog of available tags for location classification
+# These tags are used to:
+# - Categorize storage locations
+# - Define access requirements
+# - Specify equipment compatibility
+# - Set environmental conditions
+# - Enable dynamic space allocation
+# -----------------------------------------------------
+tag_catalog:
+  location:
+    values: ['front_area', 'back_area', 'mezzanine', 'ground_floor']
+    type: 'single'
+    
+  access:
+    values: ['easy_reach', 'specialized', 'restricted']
+    type: 'single'
+    
+  height:
+    values: ['low', 'medium', 'high']
+    type: 'single'
+    
+  equipment:
+    values: ['forklift', 'reach_truck', 'pallet_jack', 'order_picker']
+    type: 'multiple'
+    
+  storage_type:
+    values: ['euro_pallet', 'industrial_pallet', 'small_parts', 'bulk', 'carton', 'box']
+    type: 'multiple'
+    
+  environment:
+    values: ['dry', 'humid', 'clean', 'dust_sensitive', 'controlled']
+    type: 'multiple'

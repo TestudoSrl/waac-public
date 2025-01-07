@@ -1,0 +1,63 @@
+# -----------------------------------------------------
+# FILTER VALIDATION RULES
+# Ensures the integrity and efficiency of filter applications:
+# - Validates filter consistency
+# - Prevents conflicting rules
+# - Optimizes filter performance
+#
+# Key aspects:
+# - Tag validation: Ensures valid tag combinations
+# - Logic validation: Prevents contradicting rules
+# - Coverage validation: Ensures complete space utilization
+# -----------------------------------------------------
+filter_validation_rules:
+  - rule: 'tag_consistency'
+    checks:
+      - valid_tag_values
+      - tag_compatibility
+      - required_tags_present
+    
+  - rule: 'filter_logic'
+    checks:
+      - no_contradicting_filters
+      - filter_coverage
+      - filter_efficiency
+
+# -----------------------------------------------------
+# VALIDATION RULES
+# Master validation rules for the entire system:
+# - Physical constraints validation
+# - Logical rules validation
+# - Operational safety checks
+#
+# These rules ensure:
+# - Structural integrity is maintained
+# - Safety requirements are met
+# - Efficient space utilization
+# - Proper tenant separation
+# - Optimal picking operations
+# -----------------------------------------------------
+validation_rules:
+  physical:
+    - rule: 'structural_integrity'
+      checks:
+        - floor_loading_capacity
+        - seismic_requirements
+        - vertical_clearance
+    
+    - rule: 'safety_compliance'
+      checks:
+        - impact_protection
+        - load_notices
+        - aisle_width
+  
+  logical:
+    - rule: 'zone_assignment'
+      checks:
+        - no_overlap_between_tenants
+        - compatible_storage_types
+        - sufficient_capacity
+    
+    - rule: 'picking_optimization'
+      checks:
+        - abc_optimization
