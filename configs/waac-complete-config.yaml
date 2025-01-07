@@ -1,9 +1,23 @@
-# WaaC Physical and Logical Configuration with Tags and Filters
-version: '1.1'
+# WaaC (Warehouse as a Code) Physical and Logical Configuration
+# Version: 1.1
+# 
+# This configuration file defines the complete warehouse setup including:
+# - Physical layout and storage structures
+# - Tagging system for location classification
+# - Multi-tenant logical partitioning
+# - Operational processes (inbound, outbound, picking, etc.)
+# - Integration settings and data exchange
+#
+# The configuration follows a hierarchical structure where each section
+# builds upon the previous ones to create a complete warehouse system.
 
 # -----------------------------------------------------
-# CONFIGURAZIONE FISICA SCAFFALATURE
-# Definizione fisica con sistema di tagging
+# PHYSICAL LAYOUT CONFIGURATION
+# Defines the physical warehouse structure including:
+# - Buildings, areas, and rack layouts
+# - Storage equipment specifications
+# - Capacity and dimensional constraints
+# - Location tagging for classification
 # -----------------------------------------------------
 physical_layout:
   warehouse_id: 'WH001'
@@ -98,8 +112,14 @@ physical_layout:
                 - environment: ['clean', 'controlled']
 
 # -----------------------------------------------------
-# DEFINIZIONE DEI TAG
-# Catalogo centralizzato dei tag disponibili
+# TAG DEFINITION
+# Central catalog of available tags for location classification
+# These tags are used to:
+# - Categorize storage locations
+# - Define access requirements
+# - Specify equipment compatibility
+# - Set environmental conditions
+# - Enable dynamic space allocation
 # -----------------------------------------------------
 tag_catalog:
   location:
@@ -127,7 +147,18 @@ tag_catalog:
     type: 'multiple'
 
 # -----------------------------------------------------
-# CONFIGURAZIONE TENANT CON FILTRI
+# TENANT CONFIGURATION WITH FILTERS
+# Defines how multiple clients share the warehouse space:
+# - Logical partitioning of physical space
+# - Client-specific storage rules and constraints
+# - Dynamic space allocation policies
+# - Integration settings per tenant
+# 
+# Each tenant can have their own:
+# - Storage zones with specific requirements
+# - Picking and processing priorities
+# - Connection settings for data exchange
+# - Custom business rules and workflows
 # -----------------------------------------------------
 tenants:
   - id: 'fast_fashion'
@@ -1701,7 +1732,16 @@ tenants:
               unit: 'kg'
 
 # -----------------------------------------------------
-# REGOLE DI FILTRO
+# FILTER RULES
+# Defines the rule system for storage allocation:
+# - Standard filters: Basic location matching
+# - Custom filters: Complex allocation logic
+# - Validation rules: Ensure proper filter application
+#
+# These rules determine:
+# - How storage locations are assigned
+# - Which items can be stored where
+# - How space is optimized across tenants
 # -----------------------------------------------------
 filter_rules:
   standard_filters:
@@ -1721,7 +1761,16 @@ filter_rules:
       parameters: ['required_equipment', 'optional_equipment']
 
 # -----------------------------------------------------
-# REGOLE DI VALIDAZIONE FILTRI
+# FILTER VALIDATION RULES
+# Ensures the integrity and efficiency of filter applications:
+# - Validates filter consistency
+# - Prevents conflicting rules
+# - Optimizes filter performance
+#
+# Key aspects:
+# - Tag validation: Ensures valid tag combinations
+# - Logic validation: Prevents contradicting rules
+# - Coverage validation: Ensures complete space utilization
 # -----------------------------------------------------
 filter_validation_rules:
   - rule: 'tag_consistency'
@@ -1737,7 +1786,18 @@ filter_validation_rules:
       - filter_efficiency
 
 # -----------------------------------------------------
-# REGOLE DI VALIDAZIONE
+# VALIDATION RULES
+# Master validation rules for the entire system:
+# - Physical constraints validation
+# - Logical rules validation
+# - Operational safety checks
+#
+# These rules ensure:
+# - Structural integrity is maintained
+# - Safety requirements are met
+# - Efficient space utilization
+# - Proper tenant separation
+# - Optimal picking operations
 # -----------------------------------------------------
 validation_rules:
   physical:
