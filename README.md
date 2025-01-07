@@ -1,4 +1,5 @@
-# WaaC - Warehouse as a Code: Rivoluzionare la gestione del magazzino
+# WaaC - Warehouse as a Code
+## Rivoluzionare la gestione del magazzino
 
 ## Introduzione
 
