@@ -13,69 +13,37 @@
 # - Custom business rules and workflows
 # -----------------------------------------------------
 
-id: 'fast_fashion'
-name: 'FastFashion SpA'
-type: 'e-commerce'
+id: 'industrial_pro'
+name: 'IndustrialPro Srl'
+type: 'manufacturing'
 logical_layout:
   zones:
-    fast_moving:
-      description: 'Zona alta rotazione'
+    heavy_items:
+      description: 'Articoli pesanti'
       storage_filters:
-        location:
-          include: ['front_area']
-          exclude: ['restricted']
-        access:
-          include: ['easy_reach']
         equipment:
-          include: ['forklift', 'pallet_jack']
+          include: ['reach_truck']
+        height:
+          include: ['high']
         custom_rules:
-          - type: 'distance'
-            max_distance_from_shipping: 50  # metri
-          - type: 'height'
-            max_picking_height: 1800  # mm
-      
-      dynamic_allocation:
-        enabled: true
-        expansion_rules:
-          - condition: 'occupancy > 85%'
-            action: 'expand_to_similar_locations'
-            filters:
-              - match_tags: ['access', 'equipment']
-              - prefer_tags: ['front_area']
-    
-    bulk_storage:
-      description: 'Stoccaggio scorte'
-      storage_filters:
-        storage_type:
-          include: ['euro_pallet']
-        environment:
-          include: ['dry']
-          exclude: ['dust_sensitive']
-        custom_rules:
-          - type: 'batch_size'
-            min_batch: 10  # pallet
+          - type: 'weight'
+            min_capacity: 1000  # kg
+          - type: 'access'
+            require_equipment: ['reach_truck']
 
 connections:
   main_ftp:
     type: 'ftp'
-    security: 'sftp'
-    host: 'ftp.fastfashion.com'
-    port: 22
+    security: 'ftps'
+    host: 'ftp.industrialpro.com'
+    port: 990
     credentials:
-      username: '${ENV_FTP_USER}'
-      password: '${ENV_FTP_PASS}'
+      username: '${ENV_B2B_FTP_USER}'
+      password: '${ENV_B2B_FTP_PASS}'
     directories:
-      inbound: '/WAAC/IN'
-      outbound: '/WAAC/OUT'
-      archive: '/WAAC/ARCHIVE'
-    
-  rest_api:
-    type: 'rest'
-    base_url: 'https://api.fastfashion.com/v1'
-    auth:
-      type: 'oauth2'
-      client_id: '${ENV_API_CLIENT}'
-      client_secret: '${ENV_API_SECRET}'
+      inbound: '/EDI/IN'
+      outbound: '/EDI/OUT'
+      archive: '/EDI/ARCHIVE'
 
 operations:
   # -----------------------------------------------------
@@ -787,29 +755,29 @@ operations:
         - step: 'document_match'
           type: 'electronic'
 
-  # -----------------------------------------------------
-  # CONFIGURAZIONE MASTER DATA
-  # Gestisce i dati principali
-  # -----------------------------------------------------
-  master_data:
-    # Gestione articoli
-    items:
-      attributes:
-        - name: 'code'
-          type: 'string'
-          unique: true
-        - name: 'description'
-          type: 'text'
-          multilingual: true
-        - name: 'technical_specs'
-          type: 'json'
-        - name: 'dimensions'
-          type: 'object'
-          properties: ['length', 'width', 'height']
-        - name: 'category'
-          type: 'hierarchical'
-        - name: 'product_family'
-          type: 'reference'
-        - name: 'weight'
-          type: 'numeric'
-          unit: 'kg'
+# -----------------------------------------------------
+# CONFIGURAZIONE MASTER DATA
+# Gestisce i dati principali
+# -----------------------------------------------------
+master_data:
+  # Gestione articoli
+  items:
+    attributes:
+      - name: 'code'
+        type: 'string'
+        unique: true
+      - name: 'description'
+        type: 'text'
+        multilingual: true
+      - name: 'technical_specs'
+        type: 'json'
+      - name: 'dimensions'
+        type: 'object'
+        properties: ['length', 'width', 'height']
+      - name: 'category'
+        type: 'hierarchical'
+      - name: 'product_family'
+        type: 'reference'
+      - name: 'weight'
+        type: 'numeric'
+        unit: 'kg'

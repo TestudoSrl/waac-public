@@ -1,0 +1,77 @@
+# WaaC (Warehouse as a Code) Physical and Logical Configuration
+# Version: 1.1
+# 
+# This configuration file defines the complete warehouse setup including:
+# - Physical layout and storage structures
+# - Tagging system for location classification
+# - Multi-tenant logical partitioning
+# - Operational processes (inbound, outbound, picking, etc.)
+# - Integration settings and data exchange
+#
+# The configuration follows a hierarchical structure where each section
+# builds upon the previous ones to create a complete warehouse system.
+
+# -----------------------------------------------------
+# PHYSICAL LAYOUT AND TAG CATALOG
+# Import waac-physical_layout.yaml
+# -----------------------------------------------------
+!include waac-physical_layout.yaml
+
+# -----------------------------------------------------
+# VALIDATION RULES & FILTER VALIDATION RULES
+# Import waac-validation-rules.yaml
+# -----------------------------------------------------
+!include waac-validation-rules.yaml
+
+# -----------------------------------------------------
+# STANDARD OPERATIONS
+# Import waac-standard-operations.yaml
+# -----------------------------------------------------
+!include waac-standard-operations.yaml
+
+# -----------------------------------------------------
+# TENANT CONFIGURATION WITH FILTERS
+# Defines how multiple clients share the warehouse space:
+# - Logical partitioning of physical space
+# - Client-specific storage rules and constraints
+# - Dynamic space allocation policies
+# - Integration settings per tenant
+# 
+# Each tenant can have their own:
+# - Storage zones with specific requirements
+# - Picking and processing priorities
+# - Connection settings for data exchange
+# - Custom business rules and workflows
+# -----------------------------------------------------
+tenants:
+  - !include tenants/fastfashion.yaml
+  - !include tenants/industrial_pro.yaml
+
+# -----------------------------------------------------
+# FILTER RULES
+# Defines the rule system for storage allocation:
+# - Standard filters: Basic location matching
+# - Custom filters: Complex allocation logic
+# - Validation rules: Ensure proper filter application
+#
+# These rules determine:
+# - How storage locations are assigned
+# - Which items can be stored where
+# - How space is optimized across tenants
+# -----------------------------------------------------
+filter_rules:
+  standard_filters:
+    - type: 'tag_match'
+      description: 'Filtra per tag esatti'
+    - type: 'tag_partial'
+      description: 'Filtra per tag parziali'
+    - type: 'numeric_range'
+      description: 'Filtra per intervalli numerici'
+      
+  custom_filters:
+    - type: 'distance_based'
+      parameters: ['reference_point', 'max_distance']
+    - type: 'capacity_based'
+      parameters: ['min_capacity', 'max_capacity']
+    - type: 'equipment_based'
+      parameters: ['required_equipment', 'optional_equipment']

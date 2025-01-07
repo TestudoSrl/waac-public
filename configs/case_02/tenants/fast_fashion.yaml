@@ -1,0 +1,234 @@
+# -----------------------------------------------------
+# TENANT CONFIGURATION WITH FILTERS
+# Defines how multiple clients share the warehouse space:
+# - Logical partitioning of physical space
+# - Client-specific storage rules and constraints
+# - Dynamic space allocation policies
+# - Integration settings per tenant
+# 
+# Each tenant can have their own:
+# - Storage zones with specific requirements
+# - Picking and processing priorities
+# - Connection settings for data exchange
+# - Custom business rules and workflows
+# -----------------------------------------------------
+
+id: 'fast_fashion'
+name: 'FastFashion SpA'
+type: 'e-commerce'
+logical_layout:
+  zones:
+    fast_moving:
+      description: 'Zona alta rotazione'
+      storage_filters:
+        location:
+          include: ['front_area']
+          exclude: ['restricted']
+        access:
+          include: ['easy_reach']
+        equipment:
+          include: ['forklift', 'pallet_jack']
+        custom_rules:
+          - type: 'distance'
+            max_distance_from_shipping: 50  # metri
+          - type: 'height'
+            max_picking_height: 1800  # mm
+      
+      dynamic_allocation:
+        enabled: true
+        expansion_rules:
+          - condition: 'occupancy > 85%'
+            action: 'expand_to_similar_locations'
+            filters:
+              - match_tags: ['access', 'equipment']
+              - prefer_tags: ['front_area']
+    
+    bulk_storage:
+      description: 'Stoccaggio scorte'
+      storage_filters:
+        storage_type:
+          include: ['euro_pallet']
+        environment:
+          include: ['dry']
+          exclude: ['dust_sensitive']
+        custom_rules:
+          - type: 'batch_size'
+            min_batch: 10  # pallet
+
+connections:
+  main_ftp:
+    type: 'ftp'
+    security: 'sftp'
+    host: 'ftp.fastfashion.com'
+    port: 22
+    credentials:
+      username: '${ENV_FTP_USER}'
+      password: '${ENV_FTP_PASS}'
+    directories:
+      inbound: '/WAAC/IN'
+      outbound: '/WAAC/OUT'
+      archive: '/WAAC/ARCHIVE'
+    
+  rest_api:
+    type: 'rest'
+    base_url: 'https://api.fastfashion.com/v1'
+    auth:
+      type: 'oauth2'
+      client_id: '${ENV_API_CLIENT}'
+      client_secret: '${ENV_API_SECRET}'
+
+# -----------------------------------------------------
+# FAST FASHION OPERATIONS OVERRIDES
+# -----------------------------------------------------
+# This file contains only operations that differ from
+# the standard operations configuration.
+# All other operations will inherit from standard config.
+# Note: All other operations will use standard config
+# -----------------------------------------------------
+operations:
+  # -----------------------------------------------------
+  # INBOUND
+  # -----------------------------------------------------
+  # Manages all incoming goods processes:
+  # - Reception with or without ASN
+  # - Basic quality control
+  # - Storage management
+  # -----------------------------------------------------
+  inbound: !include waac-standard-operations.yaml#operations.inbound
+    receiving:
+      # Override quantity tolerance for fashion items
+      quality_check:
+        quantity_tolerance_percentage: 1  # Stricter than standard 3%
+      
+      # Add fashion-specific checks
+      fashion_check:
+        enabled: true
+        checks:
+          - color_match
+          - size_verification
+    
+    putaway:
+      # Add seasonal storage rules
+      rules:
+        - season_based_location
+        - collection_grouping
+  
+  # -----------------------------------------------------
+  # OUTBOUND
+  # -----------------------------------------------------
+  # Manages all outgoing goods processes:
+  # - Basic picking
+  # - Order preparation
+  # -----------------------------------------------------
+  outbound: !include waac-standard-operations.yaml#operations.outbound
+    picking:
+      # Increase wave capacity for fashion peaks
+      wave:
+        max_orders: 50     # Higher than standard 30
+        max_lines: 200     # Higher than standard 150
+      
+      # Add fashion-specific picking methods
+      methods:
+        - rf_devices
+        - paper_list
+        - pick_by_style    # Fashion-specific method
+  
+  # -----------------------------------------------------
+  # PACKING
+  # -----------------------------------------------------
+  # Manages packaging processes:
+  # - Goods verification
+  # - Basic packaging
+  # - Labeling
+  # -----------------------------------------------------
+  packing: !include waac-standard-operations.yaml#operations.packing
+  
+  # -----------------------------------------------------
+  # LOADING
+  # -----------------------------------------------------
+  # Manages loading processes:
+  # - Load verification
+  # - Basic documentation
+  # -----------------------------------------------------
+  loading: !include waac-standard-operations.yaml#operations.loading
+  
+  # -----------------------------------------------------
+  # ADDITIONAL FASHION OPERATIONS
+  # -----------------------------------------------------
+  fashion_specific:
+    # Seasonal rotation management
+    seasonal_management:
+      enabled: true
+      rotation_schedule:
+        - from: 'current_season'
+          to: 'clearance'
+          when: 'end_of_season'
+    
+    # Returns processing
+    returns:
+      enabled: true
+      processing_steps:
+        - quality_inspection
+        - restock_decision
+        - markdown_evaluation
+    
+    # Size sorting
+    size_management:
+      enabled: true
+      sorting_rules:
+        - group_by_style
+        - arrange_by_size
+
+# -----------------------------------------------------
+# CONFIGURAZIONE MASTER DATA
+# Aggiornato con attributi specifici per il fashion
+# -----------------------------------------------------
+master_data:
+  items:
+      attributes:
+        - name: 'code'
+          type: 'string'
+          unique: true
+        - name: 'description'
+          type: 'text'
+          multilingual: true
+        # Nuovi attributi fashion
+        - name: 'season'
+          type: 'enum'
+          values: ['SS24', 'FW24', 'SS25', 'FW25']
+        - name: 'collection'
+          type: 'string'
+        - name: 'size_range'
+          type: 'array'
+          items: 
+            type: 'string'
+        - name: 'color_variants'
+          type: 'array'
+          items:
+            type: 'object'
+            properties:
+              code: 'string'
+              name: 'string'
+              hex_value: 'string'
+        - name: 'style_number'
+          type: 'string'
+          unique: true
+        - name: 'category'
+          type: 'hierarchical'
+        - name: 'product_line'
+          type: 'enum'
+          values: ['basic', 'fashion', 'premium']
+        - name: 'lifecycle_status'
+          type: 'enum'
+          values: ['active', 'clearance', 'discontinued']
+        - name: 'merchandise_category'
+          type: 'hierarchical'
+        # Attributi standard
+        - name: 'technical_specs'
+          type: 'json'
+        - name: 'dimensions'
+          type: 'object'
+          properties: ['length', 'width', 'height']
+        - name: 'weight'
+          type: 'numeric'
+          unit: 'kg'

@@ -1,0 +1,160 @@
+# -----------------------------------------------------
+# TENANT CONFIGURATION WITH FILTERS
+# Defines how multiple clients share the warehouse space:
+# - Logical partitioning of physical space
+# - Client-specific storage rules and constraints
+# - Dynamic space allocation policies
+# - Integration settings per tenant
+# 
+# Each tenant can have their own:
+# - Storage zones with specific requirements
+# - Picking and processing priorities
+# - Connection settings for data exchange
+# - Custom business rules and workflows
+# -----------------------------------------------------
+
+id: 'industrial_pro'
+name: 'IndustrialPro Srl'
+type: 'manufacturing'
+logical_layout:
+  zones:
+    heavy_items:
+      description: 'Articoli pesanti'
+      storage_filters:
+        equipment:
+          include: ['reach_truck']
+        height:
+          include: ['high']
+        custom_rules:
+          - type: 'weight'
+            min_capacity: 1000  # kg
+          - type: 'access'
+            require_equipment: ['reach_truck']
+
+connections:
+  main_ftp:
+    type: 'ftp'
+    security: 'ftps'
+    host: 'ftp.industrialpro.com'
+    port: 990
+    credentials:
+      username: '${ENV_B2B_FTP_USER}'
+      password: '${ENV_B2B_FTP_PASS}'
+    directories:
+      inbound: '/EDI/IN'
+      outbound: '/EDI/OUT'
+      archive: '/EDI/ARCHIVE'
+
+# -----------------------------------------------------
+# INDUSTRIAL PRO OPERATIONS OVERRIDES
+# -----------------------------------------------------
+# This file contains only operations that differ from
+# the standard operations configuration.
+# All other operations will inherit from standard config.
+# Note: All other operations will use standard config
+# -----------------------------------------------------
+
+operations:
+  # -----------------------------------------------------
+  # INBOUND OVERRIDES
+  # -----------------------------------------------------
+  inbound:
+    receiving:
+      # Increase tolerance for bulk industrial materials
+      quality_check:
+        quantity_tolerance_percentage: 5  # Higher than standard 3%
+      
+      # Add industrial-specific checks
+      industrial_check:
+        enabled: true
+        checks:
+          - weight_verification
+          - hazmat_check
+          - certification_validation
+    
+    putaway:
+      # Add industrial storage rules
+      rules:
+        - weight_based_location
+        - hazmat_segregation
+        - heavy_equipment_access
+      
+      # Override methods for industrial use
+      methods:
+        - pallet         # Standard pallet handling
+        - heavy_load     # Special heavy load handling
+        - oversized      # Oversized items handling
+  
+  # -----------------------------------------------------
+  # OUTBOUND OVERRIDES
+  # -----------------------------------------------------
+  outbound:
+    picking:
+      # Adjust wave for industrial volumes
+      wave:
+        max_orders: 15     # Lower than standard 30 due to size
+        max_lines: 50      # Lower than standard 150 due to complexity
+      
+      # Add industrial picking methods
+      methods:
+        - rf_devices
+        - crane_assisted
+        - forklift_required
+  
+  # -----------------------------------------------------
+  # ADDITIONAL INDUSTRIAL OPERATIONS
+  # -----------------------------------------------------
+  industrial_specific:
+    # Heavy load management
+    heavy_load:
+      enabled: true
+      weight_classes:
+        - name: 'medium'
+          range: [500, 2000]    # kg
+          equipment: ['forklift']
+        - name: 'heavy'
+          range: [2000, 5000]   # kg
+          equipment: ['crane']
+    
+    # Safety protocols
+    safety_protocols:
+      enabled: true
+      checks:
+        - equipment_certification
+        - operator_qualification
+        - load_path_clearance
+    
+    # Special handling
+    special_handling:
+      enabled: true
+      types:
+        - hazardous_materials
+        - oversized_loads
+        - high_value_items
+
+# -----------------------------------------------------
+# CONFIGURAZIONE MASTER DATA
+# Gestisce i dati principali
+# -----------------------------------------------------
+master_data:
+  # Gestione articoli
+  items:
+    attributes:
+      - name: 'code'
+        type: 'string'
+        unique: true
+      - name: 'description'
+        type: 'text'
+        multilingual: true
+      - name: 'technical_specs'
+        type: 'json'
+      - name: 'dimensions'
+        type: 'object'
+        properties: ['length', 'width', 'height']
+      - name: 'category'
+        type: 'hierarchical'
+      - name: 'product_family'
+        type: 'reference'
+      - name: 'weight'
+        type: 'numeric'
+        unit: 'kg'

@@ -1,0 +1,133 @@
+# =============================================================
+# STANDARD OPERATIONS CONFIGURATION
+# =============================================================
+# This file defines standard warehouse operations that can be
+# shared across multiple tenants. Each tenant can override these
+# configurations in their specific configuration file.
+#
+# STRUCTURE:
+# - inbound: handles incoming goods
+# - outbound: manages shipments
+# - packing: handles packaging
+# - loading: manages loading processes
+# =============================================================
+
+operations:
+  # -----------------------------------------------------
+  # INBOUND
+  # -----------------------------------------------------
+  # Manages all incoming goods processes:
+  # - Reception with or without ASN
+  # - Basic quality control
+  # - Storage management
+  # -----------------------------------------------------
+  inbound:
+    # Reception configuration
+    receiving:
+      # ASN (Advance Shipping Notice) mode
+      asn_enabled: true
+      
+      # Non-ASN mode
+      no_asn_enabled: true
+      
+      # Basic quality check
+      quality_check:
+        enabled: true
+        # Acceptable quantity tolerance
+        quantity_tolerance_percentage: 3
+    
+    # Storage configuration
+    putaway:
+      # Supported storage methods
+      methods:
+        - single_item     # Single item storage
+        - carton         # Carton storage
+        - pallet         # Full pallet storage
+      
+      # Basic storage rules
+      rules:
+        - nearest_location  # Use nearest location
+        - weight_check     # Verify maximum weight
+  
+  # -----------------------------------------------------
+  # OUTBOUND
+  # -----------------------------------------------------
+  # Manages all outgoing goods processes:
+  # - Basic picking
+  # - Order preparation
+  # -----------------------------------------------------
+  outbound:
+    # Picking configuration
+    picking:
+      # Supported picking methods
+      methods:
+        - rf_devices      # RF terminals
+        - paper_list      # Paper lists
+      
+      # Wave picking configuration
+      wave:
+        enabled: true
+        max_orders: 30    # Maximum orders per wave
+        max_lines: 150    # Maximum lines per wave
+
+  # -----------------------------------------------------
+  # PACKING
+  # -----------------------------------------------------
+  # Manages packaging processes:
+  # - Goods verification
+  # - Basic packaging
+  # - Labeling
+  # -----------------------------------------------------
+  packing:
+    # Goods verification
+    check:
+      enabled: true
+      barcode_scan: true  # Barcode verification
+    
+    # Labeling
+    labeling:
+      enabled: true
+      types:
+        - shipping       # Shipping labels
+        - content       # Content labels
+
+  # -----------------------------------------------------
+  # LOADING
+  # -----------------------------------------------------
+  # Manages loading processes:
+  # - Load verification
+  # - Basic documentation
+  # -----------------------------------------------------
+  loading:
+    # Load verification
+    check:
+      enabled: true
+      verify_quantity: true     # Quantity verification
+      verify_destination: true  # Destination verification
+    
+    # Documentation
+    documentation:
+      enabled: true
+      types:
+        - delivery_note        # Transport document
+        - packing_list        # Loading list
+
+# =============================================================
+# OVERRIDE NOTES
+# =============================================================
+# To override these configurations in a specific tenant:
+#
+# 1. In the tenant file, define the same structure
+# 2. Modify only the necessary values
+# 3. Add any tenant-specific configurations
+#
+# Example of override in tenant file:
+#
+# operations:
+#   inbound:
+#     receiving:
+#       quantity_tolerance_percentage: 5  # Override tolerance
+#     custom_process:                    # Add custom process
+#       enabled: true
+#       ...
+# =============================================================

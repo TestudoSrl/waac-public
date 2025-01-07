@@ -24,6 +24,12 @@
 !include waac-validation-rules.yaml
 
 # -----------------------------------------------------
+# STANDARD OPERATIONS
+# Import waac-standard-operations.yaml.yaml
+# -----------------------------------------------------
+!include waac-standard-operations.yaml.yaml
+
+# -----------------------------------------------------
 # TENANT CONFIGURATION WITH FILTERS
 # Defines how multiple clients share the warehouse space:
 # - Logical partitioning of physical space
@@ -40,6 +46,7 @@
 tenants:
   - !include tenants/fastfashion.yaml
   - !include tenants/industrial_pro.yaml
+
 # -----------------------------------------------------
 # FILTER RULES
 # Defines the rule system for storage allocation:

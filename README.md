@@ -1,9 +1,45 @@
 # WaaC - Warehouse as a Code
 ## Rivoluzionare la gestione del magazzino
 
+## 📚 [Guida Dettagliata alla Compilazione YAML](guide.md)
+
+Per iniziare con la configurazione pratica del WaaC, consulta la nostra [guida dettagliata](guide.md) che fornisce istruzioni complete sulla compilazione dei file YAML.
+
 ## Introduzione
 
 Il concetto di "Warehouse as a Code" (WaaC) rappresenta un approccio innovativo alla gestione del magazzino, applicando i principi dell'Infrastructure as Code (IaC) al dominio della logistica. Questo articolo esplora come implementare un sistema WMS utilizzando questo paradigma, analizzandone vantaggi e implementazione pratica.
+
+## Struttura del Progetto
+
+```
+waac/
+├── configs/                       # Configurazioni per diversi casi d'uso
+│   ├── case_00/                  # Caso base
+│   │   ├── main.yaml
+│   │   ├── waac-physical_layout.yaml
+│   │   ├── waac-validation-rules.yaml
+│   │   └── tenants/
+│   │       ├── fast_fashion.yaml
+│   │       └── industrial_pro.yaml
+│   │
+│   ├── case_01/                  # Caso con operazioni standard
+│   │   ├── main.yaml
+│   │   ├── waac-physical_layout.yaml
+│   │   ├── waac-standard-operations.yaml
+│   │   ├── waac-validation-rules.yaml
+│   │   └── tenants/
+│   │       ├── fast_fashion.yaml
+│   │       └── industrial_pro.yaml
+│   │
+│   └── case_02/                  # Caso completo
+│       ├── main.yaml
+│       ├── waac-physical_layout.yaml
+│       ├── waac-standard-operations.yaml
+│       ├── waac-validation-rules.yaml
+│       └── tenants/
+│           ├── fast_fashion.yaml
+│           └── industrial_pro.yaml
+```
 
 ## L'architettura WaaC
 
