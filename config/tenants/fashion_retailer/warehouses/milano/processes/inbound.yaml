@@ -1,0 +1,8 @@
+inbound:
+  !include_common processes/inbound.yaml
+  customizations:
+    receiving:
+      asn_required: true
+      quality_check:
+        enabled: true
+        sampling_rate: 10  # %

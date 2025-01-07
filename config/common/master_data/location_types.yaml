@@ -1,0 +1,42 @@
+# Standard location types configuration
+location_types:
+  - id: 'pallet_position'
+    name: 'Pallet Position'
+    description: 'Standard pallet storage location'
+    specifications:
+      max_weight: 1000    # kg
+      dimensions:
+        length: 1200      # mm
+        width: 800        # mm
+        height: 1600      # mm
+    attributes:
+      - rack_level
+      - position_number
+      - aisle_number
+
+  - id: 'picking_location'
+    name: 'Picking Location'
+    description: 'Forward picking location for order fulfillment'
+    specifications:
+      max_weight: 500     # kg
+      dimensions:
+        length: 600       # mm
+        width: 400       # mm
+        height: 400      # mm
+    attributes:
+      - zone
+      - shelf_level
+      - bin_number
+
+  - id: 'staging_location'
+    name: 'Staging Location'
+    description: 'Temporary location for goods in transition'
+    specifications:
+      max_weight: 1500    # kg
+      dimensions:
+        length: 2400      # mm
+        width: 1600      # mm
+    attributes:
+      - area_code
+      - zone
+      - position_number

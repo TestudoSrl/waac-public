@@ -1,0 +1,30 @@
+# Standard inbound process configuration
+steps:
+  - id: 'receiving'
+    name: 'Receiving'
+    description: 'Receipt and initial check of goods'
+    settings:
+      asn_required: false  # Can be overridden by tenant
+      dock_assignment: 'manual'
+      quality_check:
+        enabled: false     # Can be overridden by tenant
+        sampling_rate: 5   # Default sampling rate %
+    
+  - id: 'putaway'
+    name: 'Put-away'
+    description: 'Moving goods to storage locations'
+    settings:
+      strategy: 'zone_based'
+      consolidation: true
+      verification:
+        scan_required: true
+        location_check: true
+    
+  - id: 'documentation'
+    name: 'Documentation'
+    description: 'Processing receiving documents'
+    settings:
+      auto_close: true
+      notifications:
+        email: true
+        system: true

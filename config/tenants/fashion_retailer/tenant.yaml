@@ -1,0 +1,16 @@
+tenant:
+  id: 'fashion_retailer'
+  name: 'Fashion Retailer SpA'
+  description: 'Retail moda fast fashion'
+  settings:
+    default_language: 'it_IT'
+    timezone: 'Europe/Rome'
+    currency: 'EUR'
+  
+  warehouses:
+    - !include warehouses/milano/layout.yaml
+    - !include warehouses/roma/layout.yaml
+  
+  integrations:
+    - !include integrations/erp.yaml
+    - !include integrations/ecommerce.yaml

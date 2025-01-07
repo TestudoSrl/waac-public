@@ -1,0 +1,22 @@
+# Rack types configuration
+selective_pallet:
+  name: 'Selective Pallet Rack'
+  description: 'Standard pallet racking system with direct access to each pallet'
+  specifications:
+    max_height: 12      # meters
+    bay_width: 2.7      # meters
+    bay_depth: 1.1      # meters
+    beam_height: 0.1    # meters
+    default_levels: 4
+    max_weight_per_level: 2500  # kg
+    default_positions_per_bay: 3
+
+drive_in:
+  name: 'Drive-In Rack'
+  description: 'High-density storage system for homogeneous products'
+  specifications:
+    max_height: 10      # meters
+    lane_width: 2.5     # meters
+    lane_depth: 12      # meters
+    default_levels: 5
+    max_weight_per_level: 3000  # kg

@@ -1,0 +1,21 @@
+# Area types configuration
+receiving:
+  name: 'Receiving Area'
+  description: 'Area for receiving and checking incoming goods'
+  features:
+    - staging_area
+    - quality_check_stations
+    - unloading_doors
+  default_settings:
+    doors: 3
+    staging_capacity: 100  # pallet
+
+storage:
+  name: 'Storage Area'
+  description: 'Main storage area for goods'
+  features:
+    - racking_system
+    - material_handling_equipment
+  default_settings:
+    aisle_width: 3.2  # meters
+    max_height: 12    # meters
